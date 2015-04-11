@@ -41,6 +41,9 @@ class MakeMKVFile:
 
     def tracks(self):
         return self.mediaDiscTracks
+    
+    def info(self):
+        return {}
 
     def ripTracks(self,tracks,pathSave):
         didRip = True

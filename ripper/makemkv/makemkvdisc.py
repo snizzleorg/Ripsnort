@@ -55,6 +55,9 @@ class MakeMKVDisc:
 
     def tracks(self):
         return self.mediaDiscTracks
+    
+    def info(self):
+        return MakeMKVDisc._deserializeDiscInfo(self.discInfoRaw)
 
     def ripTracks(self,tracks,pathSave):
         didRip = True

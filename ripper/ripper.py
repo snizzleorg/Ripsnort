@@ -33,6 +33,9 @@ class Ripper:
     
     def tracks(self):
         return self.api.tracks()
+    
+    def info(self):
+        return self.api.info()
         
     def hasLocatedMediaTracks(self):
         return self.api.hasLocatedMediaTracks()

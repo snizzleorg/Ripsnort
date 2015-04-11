@@ -325,8 +325,21 @@ def ripContent(config,notify,ripper,ripType,ripPath):
         if not drive.isDiscInserted():
             logging.error('No disc inserted!')
             sys.exit(1)
+        
+        volumeName = drive.mountedDiscName()
+        
+        info = ripper.info()
+        
+        if 'disc' in info:
+            discParams = info['disc']
+            if 'Volume Name' in discParams:
+                if len(discParams['Volume Name']) > 0:
+                    volumeName = discParams['Volume Name']
+            elif 'Name' in discParams:
+                if len(discParams['Name']) > 0:
+                    volumeName = discParams['Name']
 
-        discName = disc_name.DiscName(drive.mountedDiscName())
+        discName = disc_name.DiscName(volumeName)
 
     elif ripType == 'file' or ripType == 'dir':
         discName = disc_name.DiscName(os.path.basename(ripPath))
@@ -446,8 +459,7 @@ if __name__ == "__main__":
         
         elif arg == '-q' or arg == '--quiet':
             loggingLevel = None
-        
-            
+
         elif arg == '-i' or arg == '--i' or arg == '--identify':
             identifyMode = True
             
