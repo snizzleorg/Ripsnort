@@ -8,7 +8,7 @@ Features
  - Notification via Email/Growl/Audio when starting and finishing
  - Automatically triggered on disc tray closed (ejects on completion too)(mac)
  - Comparison engine capable of finding imdb matches to ripped videos with > 90% accuracy
-
+ - Nfo file generation on cataloging. Allows for quick and accurate addition to Kodi/XBMC library  
 
 Using MakeMKV to rip discs it then uses OpenSubtitles to find a matching comparison to your ripped files subtitles. Ensuring an accurate match and cataloging your videos to your media collection.
 
