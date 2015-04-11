@@ -202,7 +202,34 @@ def convertSubIdxToSrt(vobsubData,idxData,language='en'):
 
     return srtData
 
-def extractTextFromSRTData(srtText):
+def removeInvalidSRTData(srtText):
+    srtText = srtText.replace('[br]','<br />').replace('[BR]','<br />')
+    
+    lineSplits = srtText.split('\n')
+    startLine = 0
+    
+    while startLine < len(lineSplits):
+        textCheck = lineSplits[startLine].strip()
+        hasText = len(textCheck) > 0
+        
+        if hasText:
+            validStartChar = textCheck[0] != '['
+            if validStartChar:
+                logging.info('Found first valid srt data on line ' + str(startLine))
+                break
+
+        startLine += 1
+
+    srtText = '\n'.join( lineSplits[startLine:len(lineSplits)] )
+    
+    lineSplits = srtText.split('\n')
+    
+    assert(srtText.strip()[0]!='[')
+    assert(len(srtText)>0)
+
+    return srtText
+
+def extractTextFromSRTDataMain(srtText):
     splits = [s.strip() for s in re.split(r'\n\s*\n', srtText) if s.strip()]
     regex = re.compile(r'''(?P<index>\d+).*?(?P<start>\d{2}:\d{2}:\d{2},\d{3}) --> (?P<end>\d{2}:\d{2}:\d{2},\d{3})\s*.*?\s*(?P<text>.*)''', re.DOTALL)
 
@@ -212,14 +239,38 @@ def extractTextFromSRTData(srtText):
         for s in splits:
             r = regex.search(s)
 
-            if r is not None:
+            if r is not None and len(r.groups()) >= 4:
                 text = r.groups()[3]
                 #Remove any '<>' from text i.e. italics
-                text = re.sub(r'<[^>]*>','',text)
-                textReturn += text + '\n'
+                textOrig = re.sub(r'<[^>]*>','',text)
+                textNew = Caption._removeAdvertsFromText(textOrig)
+
+                if len(textNew) == len(textOrig):
+                    textReturn += textNew + '\n'
+
     except Exception as e:
         logging.error('Failed to extract srt:\n' + str(e))
 
+    return textReturn
+
+def extractTextFromSRTDataFallback(srtText):
+    assert srtText != None
+    assert len(srtText) > 0
+
+    textReturn = ''
+    
+    splits = srtText.strip().split('\n')
+    
+    for i in range(0,len(splits)):
+        text = splits[i].strip()
+        if len(text) == 0 and i > 0:
+            textOrig = splits[i-1]
+            textNew = Caption._removeAdvertsFromText(splits[i-1])
+            
+            if len(textNew) == len(textOrig):
+                textReturn += textNew
+        
+    assert len(textReturn) > 0
     return textReturn
 
 
@@ -305,9 +356,9 @@ class Caption:
         return matchRatio
     
     @staticmethod
-    def _textForComparison(textReplace):
-        textA = textReplace.lower()
-        
+    def _removeAdvertsFromText(textReplace):
+        textA = textReplace
+
         #remove any http links
         textA = re.sub(r'(https?:\/\/)?([\da-z\.-]+)\.([a-zA-Z\.]{2,32}).*\ ',' ',textA)
         textA = re.sub(r'(?:)opensubtitles[\.| ]org',' ',textA)
@@ -332,8 +383,18 @@ class Caption:
         
         textA = re.sub(r'(?i)advertise your product or brand here.{1,3}contact today','',textA)
         
-        textA = re.sub(r'(?i)Bio Cleanse Organic Detox','',textA)
-        textA = re.sub(r'(?i)Support us and become VIP member.*to remove all ads from','',textA)
+        textA = re.sub(r'(?i)bio cleanse organic detox','',textA)
+        textA = re.sub(r'(?i)support us and become vip member.*to remove all ads from','',textA)
+        textA = re.sub(r'(?i)shop this show\'s fashion on looklive.com','',textA)
+        
+        return textA
+
+    @staticmethod
+    def _textForComparison(textReplace):
+        textA = textReplace.lower()
+        
+        #remove any http links
+        textA = Caption._removeAdvertsFromText(textA)
         
         #remove html
         textA = re.sub(r'<[^>]*>','',textA)
@@ -465,12 +526,19 @@ class Caption:
         
         return hashVal
 
+
 class SRTCaption(Caption):
     def __init__(self,srtRaw,language):
         assert(len(srtRaw)>0)
         assert(language)
+        
+        validSrtRaw = removeInvalidSRTData(srtRaw)
 
-        srtText = extractTextFromSRTData(srtRaw)
+        srtText = extractTextFromSRTDataMain(validSrtRaw)
+        
+        if srtText == None or len(srtText) == 0:
+            srtText = extractTextFromSRTDataFallback(validSrtRaw)
+
         assert(len(srtText)>0)
        
         Caption.__init__(self,srtText,language)
@@ -506,8 +574,16 @@ class VobSubCaption(Caption):
         elif len(lan) == 3:
             langCode = convert3to2CharCode(lan)
         
-        srtData = convertSubIdxToSrt(subRaw,idxRaw,langCode)
-        srtText = extractTextFromSRTData(srtData)
+        srtRaw = convertSubIdxToSrt(subRaw,idxRaw,langCode)
+
+        validSrtRaw = removeInvalidSRTData(srtRaw)
+
+        srtText = extractTextFromSRTDataMain(validSrtRaw)
+        
+        if srtText == None or len(srtText) == 0:
+            srtText = extractTextFromSRTDataFallback(validSrtRaw)
+
+        assert(len(srtText)>0)
 
         Caption.__init__(self,srtText,langCode)
         
@@ -535,10 +611,16 @@ class PGSCaption(Caption):
         assert(len(subData)>0)
         assert(len(idxData)>0)
         
-        srtData = convertSubIdxToSrt(subData,idxData)
-        assert(len(srtData)>0)
+        srtRaw = convertSubIdxToSrt(subData,idxData)
+        assert(len(srtRaw)>0)
 
-        srtText = extractTextFromSRTData(srtData)
+        validSrtRaw = removeInvalidSRTData(srtRaw)
+
+        srtText = extractTextFromSRTDataMain(validSrtRaw)
+        
+        if srtText == None or len(srtText) == 0:
+            srtText = extractTextFromSRTDataFallback(validSrtRaw)
+
         assert(len(srtText)>0)
         
         Caption.__init__(self,srtText,lan)

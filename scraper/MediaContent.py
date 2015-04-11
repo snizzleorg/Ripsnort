@@ -3,7 +3,8 @@
 
 
 import logging
-
+from xml.etree import ElementTree
+from xml.dom import minidom
 
 class MediaContent(object):
     def __init__(self):
@@ -47,6 +48,33 @@ class MediaContent(object):
                 break
 
         return isMatch
+    
+    def nfo(self):
+        rootElem = ElementTree.Element('movie')
+        
+        idElem = ElementTree.SubElement(rootElem,'id')
+        idElem.attrib['moviedb'] = str(self.scraper_source)
+        idElem.text = str(self.unique_id)
+        
+        titleElem = ElementTree.SubElement(rootElem,'title')
+        titleElem.text = str(self.title)
+        
+        yearElem = ElementTree.SubElement(rootElem,'year')
+        yearElem.text = str(self.production_year)
+        
+        outlineElem = ElementTree.SubElement(rootElem,'outline')
+        outlineElem.text = str(self.plot_outline)
+        
+        for genre in self.genres:
+            genreElem = ElementTree.SubElement(rootElem,'genre')
+            genreElem.text = str(genre)
+            
+        xmlText = ElementTree.tostring(rootElem)
+        
+        xmlPretty = minidom.parseString(xmlText).toprettyxml()
+        
+        return xmlPretty
+        
 
     def __repr__(self):
         retStr = "<MediaContent "

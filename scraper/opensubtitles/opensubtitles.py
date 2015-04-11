@@ -103,7 +103,8 @@ class OpenSubtitles:
         captions = []
         
         language = self._get3CharLanguageCodeFromWord(language)
-    
+        
+        assert movieObject.scraper_source.lower() == 'imdb'
         imdbId = movieObject.unique_id.replace('tt','')
 
         logging.debug('Searching for: ' + str(imdbId) + ' language:' + language + ' max:' + str(downloadLimit))
@@ -137,6 +138,7 @@ class OpenSubtitles:
         
         language = self._get3CharLanguageCodeFromWord(language)
     
+        assert movieObject.scraper_source.lower() == 'imdb'
         imdbId = tvepisodeObject.unique_id.replace('tt','')
 
         logging.debug('Searching for: ' + str(imdbId) + ' language:' + language + ' max:' + str(downloadLimit))

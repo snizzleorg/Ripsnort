@@ -178,7 +178,7 @@ class DiscDrive:
     
         if self.isDiscInserted():
             mountPath = self.mountedPath()
-            assert mountPath == None
+            assert mountPath != None
             discName = os.path.basename(mountPath)
 
         return discName

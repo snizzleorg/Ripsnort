@@ -561,6 +561,13 @@ if __name__ == "__main__":
 
                     logging.info('Moving file from: ' + str(uncatalogedFilePath) + ' destination: ' + str(dstFile))
                     os.rename(uncatalogedFilePath,dstFile)
+                    
+                    nfoFile = os.path.join(ripPathComplete,(newFileName+'.nfo'))
+                    nfoXml = mediaObj.nfo()
+                    logging.info('Writing nfo xml: ' + nfoXml + ', to file: ' + nfoFile)
+                    fNfo = open(nfoFile,'w')
+                    fNfo.write(nfoXml)
+                    fNfo.close()
 
                 else:
                     if mediaObj.content_type == 'tvepisode':
