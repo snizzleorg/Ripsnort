@@ -332,12 +332,10 @@ def ripContent(config,notify,ripper,ripType,ripPath):
         
         if 'disc' in info:
             discParams = info['disc']
-            if 'Volume Name' in discParams:
-                if len(discParams['Volume Name']) > 0:
-                    volumeName = discParams['Volume Name']
-            elif 'Name' in discParams:
-                if len(discParams['Name']) > 0:
-                    volumeName = discParams['Name']
+            if ('Name' in discParams) and (len(discParams['Name']) > 0):
+                volumeName = discParams['Name']
+            elif ('Tree Info' in discParams) and (len(discParams['Tree Info']) > 0):
+                volumeName = discParams['Tree Info']
 
         discName = disc_name.DiscName(volumeName)
 
