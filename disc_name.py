@@ -39,6 +39,10 @@ class DiscName:
         
         if self.discNumber is not None:
             self.formattedName = self.formattedName + ' - DiscNumber ' + str(self.discNumber)
+        
+        #Remove any invalid chars that would cause a problem for file/folder naming
+        validFilePathChars = '-_.() abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        self.formattedName = ''.join(c for c in self.formattedName if c in validFilePathChars)
             
         logging.info('DiscName converted ' + str(self.originalDiscName) + ' to ' + str(self.title) + ' season ' + str(self.season) + ' discnum ' + str(self.discNumber))
 

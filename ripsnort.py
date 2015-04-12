@@ -368,7 +368,7 @@ def ripContent(config,notify,ripper,ripType,ripPath):
     t.daemon = True
     t.start()
 
-    if ripper.hasLocatedMediaTracks():
+    if ripper.hasLocatedMediaTracks() and len(ripper.tracks()) > 0:
         discTracksToRip = ripper.tracks()
 
         logging.info( 'All video tracks:' + str(ripTracks) )
