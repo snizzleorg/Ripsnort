@@ -95,6 +95,8 @@ def convertSup2SubIdx(pgsData):
         return None
         
     pgsPath = apppath.BDSup2Sub()
+    if not pgsPath:
+        logging.warn("BDSup2Sub is not installed. Can't read subtitles without!")
     assert(pgsPath)
             
     tmpSupFile = os.path.join(apppath.pathTemporary('caption'),'subtitle.sup')

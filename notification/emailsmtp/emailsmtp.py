@@ -126,6 +126,10 @@ class EmailSMTP:
         self._sendMessage(m.as_string())
 
     def _sendMessage(self,message):
+        if self.source_email == 'myemail@gmail.com':
+            logging.warn('Email address has not been set correctly, ignoring send request from: ' + str(self.source_email))
+            return
+
         logging.info('Sending email to \'' + str(self.destination_email) + '\'')
         logging.info('Sending email: ' + message)
         self.smtp = smtplib.SMTP_SSL(self.server,self.port)

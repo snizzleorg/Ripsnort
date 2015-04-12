@@ -116,13 +116,19 @@ def vobsub2srt():
 def BDSup2Sub():
     returnPath = None
 
-    pathBinary = pathForBinary('BDSup2Sub')
+    pathBinary1 = pathForBinary('BDSup2Sub')
+    pathBinary2 = pathForBinary('bdsup2sub')
     pathApp = pathForApp('BDSup2Sub')
     
-    if pathBinary:
-        returnPath = pathBinary
+    if pathBinary1:
+        returnPath = pathBinary1
+    elif pathBinary2:
+        returnPath = pathBinary2
     elif pathApp:
-        returnPath = os.path.join(pathApp,'Contents','MacOS','JavaApplicationStub')
+        platformName = platform.system().lower().strip()
+
+        if platformName == 'darwin':        
+            returnPath = os.path.join(pathApp,'Contents','MacOS','JavaApplicationStub')
     
     return returnPath
 
