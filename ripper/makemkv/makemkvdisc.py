@@ -108,7 +108,7 @@ class MakeMKVDisc:
             ripType = 'dev'
 
             logging.info('Started ripping all tracks to: ' + str(pathSave))
-            cmdargs = [apppath.makemkvcon(),'-r','--noscan','mkv',ripType + ':' + str(self.filePath),'all',pathSave]
+            cmdargs = [apppath.makemkvcon(),'-r','--noscan','mkv',ripType + ':' + str(self.deviceID),'all',pathSave]
             logging.debug('Running command: ' + ' '.join(cmdargs))
             exitCode = subprocess.call(cmdargs)
                 
