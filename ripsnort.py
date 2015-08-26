@@ -46,9 +46,8 @@ def sanitizeFilePath(filePathString):
 
 def isInternetConnectionAvailable():
     try:
-        '''Google IP'''
         import urllib2
-        response=urllib2.urlopen('http://74.125.228.100',timeout=5)
+        response=urllib2.urlopen('http://www.google.com',timeout=5)
         return True
     except urllib2.URLError as err:
         return False
