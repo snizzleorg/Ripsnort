@@ -85,7 +85,7 @@ Tools used
 
 Donations
 --------------
-This project is dependant on the OpenSubtitles.org website. If this project has been useful to you please consider contributing
+This project is dependant on the OpenSubtitles.org website. If this project has been useful to you please consider donating
 
 
 License
