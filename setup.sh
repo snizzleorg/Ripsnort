@@ -241,7 +241,7 @@ if [[ $os_name == 'Linux' ]]; then
     which makemkvcon > /dev/null
 
     if [ $? -ne 0 ]; then
-        linux_install_makemkv 1.9.0
+        linux_install_makemkv 1.9.7
     fi
 
 elif [[ $os_name == 'Darwin' ]]; then
